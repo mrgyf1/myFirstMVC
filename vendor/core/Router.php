@@ -6,6 +6,9 @@
  * Date: 30.03.2017
  * Time: 11:44
  */
+
+namespace vendor\core;
+
 class Router
 {
     protected  static $routes =[];
@@ -45,9 +48,15 @@ class Router
     */
     public static function dispatch($url){
         if (self::matchRoute($url)){
-            $controller = self::$route['controller'];
+            $controller = 'app\controllers\\'.self::upperCamelCase(self::$route['controller']);
             if (class_exists( $controller )){
-                echo 'Ok';
+                $cObj = new $controller;
+                $action = self::lowerCamelCase(self::$route['action'] . 'Action');
+                if (method_exists($cObj, $action)){
+                    $cObj->$action();
+                }else{
+                    echo "Метод <b>$controller::$action</b> не найден";
+                }
             }else {
                 echo "Контроллер <b>$controller</b> не найден";
             }
@@ -55,6 +64,19 @@ class Router
             http_response_code(404);
             include '404.html';
         }
+    }
+
+    protected static function upperCamelCase($name){
+        $name = str_replace('-',' ',$name);
+        $name = ucwords($name);
+        $name = str_replace(' ','',$name);
+        return $name;
+    }
+    protected static function lowerCamelCase($name){
+        $name = str_replace('-',' ',$name);
+        $name = ucwords($name);
+        $name = str_replace(' ','',$name);
+        return lcfirst($name);
     }
 
 }

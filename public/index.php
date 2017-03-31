@@ -5,18 +5,34 @@
  * Date: 30.03.2017
  * Time: 11:29
  */
+error_reporting(-1);
+use vendor\core\Router;
+
 $query = rtrim($_SERVER['QUERY_STRING'], '/');
 
-require '../vendor/core/Router.php';
-require '../vendor/libs/functions.php';
-require '../app/contollers/Main.php';
-require '../app/contollers/Posts.php';
+define('WWW', __DIR__);
+define('CORE', dirname(__DIR__) . '/vendor/core');
+define('ROOT', dirname(__DIR__));
+define('APP', dirname(__DIR__) . '/app');
 
-Router::add('^$', ['contoller'=>'Main', 'action'=>'index']);
+require '../vendor/libs/functions.php';
+
+spl_autoload_register(function ($class){
+    $file = ROOT . '/' . str_replace('\\', '/', $class) . '.php';
+    if (is_file($file)){
+        require_once $file;
+    }
+});
+
+Router::add('^pages/?(?P<action>[a-z-]+)?$', ['controller'=>'Posts']);
+
+// Defaults routes
+Router::add('^$', ['controller'=>'Main', 'action'=>'index']);
 Router::add('^(?P<controller>[a-z-]+)/?(?P<action>[a-z-]+)?$');
 
 debug(Router::getRoutes());
 
+debug(Router::getRoute());
+
 Router::dispatch($query);
 
-Router::dispatch
