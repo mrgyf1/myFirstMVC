@@ -48,6 +48,7 @@ class Router
      * @return void
     */
     public static function dispatch($url){
+        $url = self::removeQueryString($url);
         if (self::matchRoute($url)){
             $controller = 'app\controllers\\' . self::$route['controller'];
             if (class_exists( $controller )){
@@ -79,5 +80,14 @@ class Router
         $name = str_replace(' ','',$name);
         return lcfirst($name);
     }
-
+    protected static function removeQueryString($url){
+        if ($url){
+            $params = explode('&', $url, 2);
+            if (false === strpos($params[0],'0')){
+                return rtrim($params[0],'/');
+            }else{
+                return '';
+            }
+        }
+    }
 }
