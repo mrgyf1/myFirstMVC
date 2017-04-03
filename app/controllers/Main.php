@@ -9,9 +9,14 @@
 
 namespace app\controllers;
 
-class Main
+class Main extends App
 {
+    public $layout = 'main';
+
     public function indexAction(){
-        echo 'Main::index';
+        //$this->layout = false;
+        //$this->view = 'test';
+        $name = 'German';
+        $this->set(['name'=> $name, 'hi'=>'hello!']);
     }
 }
